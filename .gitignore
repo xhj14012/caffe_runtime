@@ -108,6 +108,7 @@ venv.bak/
 /lmdb
 /mean
 /glog
+/result
 *.mdb
 *.binaryproto
 *.caffemodel
