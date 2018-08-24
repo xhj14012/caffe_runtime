@@ -19,11 +19,11 @@ endless = False
 enhance_resize = True
 enhance_rotate = True
 enhance_flip = True
-enhance_lambda = True
-enhance_color = True
-enhance_brightness = True
-enhance_contrast = True
-enhance_sharpness = True
+enhance_lambda = False
+enhance_color = False
+enhance_brightness = False
+enhance_contrast = False
+enhance_sharpness = False
 enhance_hsvfactor = False
 
 resize_hight = 500
@@ -338,6 +338,11 @@ def enhance_images(imageDir):
     cnt = 1
     for person, imagename in allImgsM:
         origPath = os.path.join(imageDir, person, imagename)
+        # print(imageDir)
+        # print(person)
+        # print(imagename)
+        # print(origPath)
+        # print(imageDir+person+ imagename)
         print(cnt, ": work on '%s' " % origPath, end="")
         img = Image.open(origPath)
         # img = cv2.imread(origPath)
@@ -347,7 +352,7 @@ def enhance_images(imageDir):
         # trans img to rgb
         img = img.convert("RGB")
         # get prename
-        prename = get_prename(imageDir + person + '/' + imagename)
+        prename = get_prename(os.path.join(imageDir,person,imagename))
         # format orig img
         os.remove(origPath)
         img.save(prename + ".jpg")
@@ -363,9 +368,9 @@ def enhance_images(imageDir):
         cnt += 1
     return
 def main():
-    if (debug == True):
-        enhance_images('./test/')
-        exit(0)
+    # if (debug == True):
+    #     enhance_images('./data/')
+    #     exit(0)
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
