@@ -362,9 +362,7 @@ def enhance_images(imageDir):
         print("[--100%--]")
         cnt += 1
     return
-
-
-if __name__ == '__main__':
+def main():
     if (debug == True):
         enhance_images('./test/')
         exit(0)
@@ -378,3 +376,6 @@ if __name__ == '__main__':
 
     enhance_images(args.imageDir)
     # main(sys.argv[1:])
+
+if __name__ == '__main__':
+    main()
