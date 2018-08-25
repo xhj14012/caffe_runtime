@@ -114,3 +114,5 @@ venv.bak/
 *.caffemodel
 *.solverstate
 *.7z
+/.idea
+.DS_Store
