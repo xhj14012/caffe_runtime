@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
 from PIL import Image, ImageEnhance, ImageFilter, ImageDraw
 import cv2
 import random, sys
@@ -26,8 +27,8 @@ enhance_contrast = False
 enhance_sharpness = False
 enhance_hsvfactor = False
 
-resize_hight = 500
-resize_weight = 500
+resize_hight = 300
+resize_weight = 300
 
 rotate_step = 90
 
@@ -343,7 +344,7 @@ def enhance_images(imageDir):
         # print(imagename)
         # print(origPath)
         # print(imageDir+person+ imagename)
-        print(cnt, ": work on '%s' " % origPath, end="")
+        print(cnt, ": work on '%s' " % origPath, end='')
         img = Image.open(origPath)
         # img = cv2.imread(origPath)
         # tfactor(img)
@@ -360,7 +361,7 @@ def enhance_images(imageDir):
         prename = prename + enhance_flag
         # ehance img
         img_list = enhanceMgr(img, prename)
-        print("get %d copy" % len(img_list), end="")
+        print("get %d copy" % len(img_list), end='')
         for (_img, _name) in img_list:
             _img.save(_name + '.jpg')
 
