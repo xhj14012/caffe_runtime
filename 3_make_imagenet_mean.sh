@@ -11,7 +11,7 @@ if [ ! -d $GLOG ];then
 fi
 
 LMDB=./lmdb
-MEAN=./mean
+MEAN=./models/caffenet
 # DATA=..
 TOOLS=$CAFFE_ROOT/build/tools/Release
 if [ ! -d $MEAN ];then
