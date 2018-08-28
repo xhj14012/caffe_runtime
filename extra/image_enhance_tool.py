@@ -18,7 +18,7 @@ extra_enhance = True
 endless = False
 
 enhance_resize = True
-enhance_rotate = True
+enhance_rotate = False
 enhance_flip = False
 enhance_lambda = False
 enhance_color = False
@@ -26,6 +26,7 @@ enhance_brightness = False
 enhance_contrast = False
 enhance_sharpness = False
 enhance_hsvfactor = False  # unrecommend
+enhance_env = False  # unfinished
 
 resize_hight = 300
 resize_weight = 300
@@ -94,7 +95,7 @@ def image_enhance_brightness(img, prename, istart=brightness_start, istep=bright
 
 
 # 对比度
-def image_enhance_contrast(img, prename,istart=contrast_start, istep=contrast_step, irange=contrast_range):
+def image_enhance_contrast(img, prename, istart=contrast_start, istep=contrast_step, irange=contrast_range):
     img_list = []
     imgenhancer = ImageEnhance.Contrast(img)
     for i in range(1, istep):
@@ -109,7 +110,7 @@ def image_enhance_contrast(img, prename,istart=contrast_start, istep=contrast_st
 
 
 # 锐化
-def image_enhance_sharpness(img, prename,istart=sharpness_start, istep=sharpness_step, irange=sharpness_range):
+def image_enhance_sharpness(img, prename, istart=sharpness_start, istep=sharpness_step, irange=sharpness_range):
     img_list = []
     imgenhancer = ImageEnhance.Sharpness(img)
     for i in range(1, istep):
@@ -124,7 +125,7 @@ def image_enhance_sharpness(img, prename,istart=sharpness_start, istep=sharpness
 
 
 # 像素点
-def image_enhance_lambda(img, prename,istart=lambda_start, istep=lambda_step, irange=lambda_range):
+def image_enhance_lambda(img, prename, istart=lambda_start, istep=lambda_step, irange=lambda_range):
     img_list = []
     for i in range(1, istep):
         factor = i / irange
@@ -197,6 +198,37 @@ def image_enhance_flip(img, prename):
         # newimg.save(newname+'.jpg')
         img_list.append((newimg, newname))
     return (img_list)
+
+
+def env(img, prename):
+    img_list = []
+    a = np.asarray(img.convert('L')).astype('float')
+
+    depth = 10.  # (0-100)
+    grad = np.gradient(a)  # 取图像灰度的梯度值
+    grad_x, grad_y = grad  # 分别取横纵图像梯度值
+    grad_x = grad_x * depth / 100.
+    grad_y = grad_y * depth / 100.
+    A = np.sqrt(grad_x ** 2 + grad_y ** 2 + 1.)
+    uni_x = grad_x / A
+    uni_y = grad_y / A
+    uni_z = 1. / A
+
+    vec_el = np.pi / 2.2  # 光源的俯视角度，弧度值
+    vec_az = np.pi / 4.  # 光源的方位角度，弧度值
+    dx = np.cos(vec_el) * np.cos(vec_az)  # 光源对x 轴的影响
+    dy = np.cos(vec_el) * np.sin(vec_az)  # 光源对y 轴的影响
+    dz = np.sin(vec_el)  # 光源对z 轴的影响
+
+    b = 255 * (dx * uni_x + dy * uni_y + dz * uni_z)  # 光源归一化
+    b = b.clip(0, 255)
+
+    im = Image.fromarray(b.astype('uint8'))  # 重构图像
+    newname = prename + "_env_"
+    newimg = im
+    img_list.append((newimg, newname))
+    im.save(prename + enhance_flag + '_env.jpg')
+    return
 
 
 # def main(argv):
@@ -325,32 +357,6 @@ def get_prename(imagename):
     (filepath, basename) = os.path.split(imagename)
     (filename, extension) = os.path.splitext(basename)
     return (filepath + "/" + filename)
-
-
-# def env(img):
-#     a = np.asarray(img.convert('L')).astype('float')
-#
-#     depth = 10.  # (0-100)
-#     grad = np.gradient(a)  # 取图像灰度的梯度值
-#     grad_x, grad_y = grad  # 分别取横纵图像梯度值
-#     grad_x = grad_x * depth / 100.
-#     grad_y = grad_y * depth / 100.
-#     A = np.sqrt(grad_x ** 2 + grad_y ** 2 + 1.)
-#     uni_x = grad_x / A
-#     uni_y = grad_y / A
-#     uni_z = 1. / A
-#
-#     vec_el = np.pi / 2.2  # 光源的俯视角度，弧度值
-#     vec_az = np.pi / 4.  # 光源的方位角度，弧度值
-#     dx = np.cos(vec_el) * np.cos(vec_az)  # 光源对x 轴的影响
-#     dy = np.cos(vec_el) * np.sin(vec_az)  # 光源对y 轴的影响
-#     dz = np.sin(vec_el)  # 光源对z 轴的影响
-#
-#     b = 255 * (dx * uni_x + dy * uni_y + dz * uni_z)  # 光源归一化
-#     b = b.clip(0, 255)
-#
-#     im = Image.fromarray(b.astype('uint8'))  # 重构图像
-#     im.save('Ronaldo2.jpg')
 
 def enhance_images(imageDir):
     print("run enhance_image on " + imageDir)
