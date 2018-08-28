@@ -19,13 +19,13 @@ endless = False
 
 enhance_resize = True
 enhance_rotate = True
-enhance_flip = True
+enhance_flip = False
 enhance_lambda = False
 enhance_color = False
 enhance_brightness = False
 enhance_contrast = False
 enhance_sharpness = False
-enhance_hsvfactor = False
+enhance_hsvfactor = False  # unrecommend
 
 resize_hight = 300
 resize_weight = 300
@@ -37,18 +37,26 @@ flip_y = True
 flip_xy = True
 flip_yx = True
 
+# range(istart, istop, istep)
+
+
+lambda_start = 0.7
 lambda_step = 4
 lambda_range = 4.0
 
+color_start = 0.7
 color_step = 4
 color_range = 4.0
 
+brightness_start = 0.7
 brightness_step = 4
 brightness_range = 4.0
 
+contrast_start = 0.7
 contrast_step = 4
 contrast_range = 4.0
 
+sharpness_start = 0.7
 sharpness_step = 4
 sharpness_range = 4.0
 
@@ -56,11 +64,12 @@ hsvfactor_times = 3
 
 
 # 颜色
-def image_enhance_color(img, prename, istep=color_step, irange=color_range):
+def image_enhance_color(img, prename, istart=color_start, istep=color_step, irange=color_range):
     img_list = []
     imgenhancer = ImageEnhance.Color(img)
     for i in range(1, istep):
         factor = i / irange
+        if (factor < istart): continue
         newimg = imgenhancer.enhance(factor)
         newname = prename + "_color_%.2f" % factor
         # newimg.show(newname)
@@ -70,11 +79,12 @@ def image_enhance_color(img, prename, istep=color_step, irange=color_range):
 
 
 # 亮度
-def image_enhance_brightness(img, prename, istep=brightness_step, irange=brightness_range):
+def image_enhance_brightness(img, prename, istart=brightness_start, istep=brightness_step, irange=brightness_range):
     img_list = []
     imgenhancer = ImageEnhance.Brightness(img)
     for i in range(1, istep):
         factor = i / irange
+        if (factor < istart): continue
         newimg = imgenhancer.enhance(factor)
         newname = prename + "_brightness_%.2f" % factor
         # newimg.show(newname)
@@ -84,11 +94,12 @@ def image_enhance_brightness(img, prename, istep=brightness_step, irange=brightn
 
 
 # 对比度
-def image_enhance_contrast(img, prename, istep=contrast_step, irange=contrast_range):
+def image_enhance_contrast(img, prename,istart=contrast_start, istep=contrast_step, irange=contrast_range):
     img_list = []
     imgenhancer = ImageEnhance.Contrast(img)
     for i in range(1, istep):
         factor = i / irange
+        if (factor < istart): continue
         newimg = imgenhancer.enhance(factor)
         newname = prename + "_contrast_%.2f" % factor
         # newimg.show(newname)
@@ -98,11 +109,12 @@ def image_enhance_contrast(img, prename, istep=contrast_step, irange=contrast_ra
 
 
 # 锐化
-def image_enhance_sharpness(img, prename, istep=sharpness_step, irange=sharpness_range):
+def image_enhance_sharpness(img, prename,istart=sharpness_start, istep=sharpness_step, irange=sharpness_range):
     img_list = []
     imgenhancer = ImageEnhance.Sharpness(img)
     for i in range(1, istep):
         factor = i / irange
+        if (factor < istart): continue
         newimg = imgenhancer.enhance(factor)
         newname = prename + "_sharpness_%.2f" % factor
         # newimg.show(newname)
@@ -112,10 +124,11 @@ def image_enhance_sharpness(img, prename, istep=sharpness_step, irange=sharpness
 
 
 # 像素点
-def image_enhance_lambda(img, prename, istep=lambda_step, irange=lambda_range):
+def image_enhance_lambda(img, prename,istart=lambda_start, istep=lambda_step, irange=lambda_range):
     img_list = []
     for i in range(1, istep):
         factor = i / irange
+        if (factor < istart): continue
         newimg = img.point(lambda i: i * (factor))  # 对每一个像素点进行增强
         newname = prename + "_lambda_%.2f" % factor
         # newimg.show(newname)
@@ -139,7 +152,7 @@ def image_enhance_hsvfactor(img, prename, itimes=hsvfactor_times):
         hsv[:, :, 2] = hsv[:, :, 2] * (0.2 + seed[2] * 0.8)
         cvimg = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         newimg = Image.fromarray(cv2.cvtColor(cvimg, cv2.COLOR_BGR2RGB))
-        newname = prename + "_hsv_%.2f_%.2f_%.2f" % (seed[0],seed[1],seed[2])
+        newname = prename + "_hsv_%.2f_%.2f_%.2f" % (seed[0], seed[1], seed[2])
         img_list.append((newimg, newname))
     return (img_list)
 
@@ -257,46 +270,52 @@ def enhanceMgr(img, prename):
         img_list = image_enhance_lambda(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_lambda(_img, _name)
+                _img_list += image_enhance_lambda(_img, _name)
             res_list += _img_list
     if (enhance_color):
         img_list = image_enhance_color(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_color(_img, _name)
+                _img_list += image_enhance_color(_img, _name)
             res_list += _img_list
 
     if (enhance_brightness):
         img_list = image_enhance_brightness(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_brightness(_img, _name)
+                _img_list += image_enhance_brightness(_img, _name)
             res_list += _img_list
 
     if (enhance_contrast):
         img_list = image_enhance_contrast(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_contrast(_img, _name)
+                _img_list += image_enhance_contrast(_img, _name)
             res_list += _img_list
 
     if (enhance_sharpness):
         img_list = image_enhance_sharpness(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_sharpness(_img, _name)
+                _img_list += image_enhance_sharpness(_img, _name)
             res_list += _img_list
     if (enhance_hsvfactor):
         img_list = image_enhance_hsvfactor(img, prename)
         res_list += img_list
         if (extra_enhance):
+            _img_list = []
             for (_img, _name) in flip_list:
-                _img_list = image_enhance_hsvfactor(_img, _name)
+                _img_list += image_enhance_hsvfactor(_img, _name)
             res_list += _img_list
 
     return res_list
@@ -353,7 +372,7 @@ def enhance_images(imageDir):
         # trans img to rgb
         img = img.convert("RGB")
         # get prename
-        prename = get_prename(os.path.join(imageDir,person,imagename))
+        prename = get_prename(os.path.join(imageDir, person, imagename))
         # format orig img
         os.remove(origPath)
         img.save(prename + ".jpg")
@@ -368,6 +387,8 @@ def enhance_images(imageDir):
         print("[--100%--]")
         cnt += 1
     return
+
+
 def main():
     # if (debug == True):
     #     enhance_images('./data/')
@@ -382,6 +403,7 @@ def main():
 
     enhance_images(args.imageDir)
     # main(sys.argv[1:])
+
 
 if __name__ == '__main__':
     main()

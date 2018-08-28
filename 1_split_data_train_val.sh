@@ -23,7 +23,7 @@ python $EXTRATOOLS/create_pathfile_train_txt.py \
 	2>&1 | tee $LOG
 echo "finished"
 
-# Generate tval.txt
+# Generate val.txt
 echo "Generate tval.txt .."
 GLOG_logtostderr=0 GLOG_log_dir=$GLOG \
 python $EXTRATOOLS/create_pathfile_val_txt.py \
