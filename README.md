@@ -9,7 +9,7 @@
        	./data/OK/*.jpg
        	./data/NG/*.jpg
        	./data/*/*.jpg
-       Then simply run 
+       Then simply run (test on git-bash)
 
        ```bash
        source 0_enhance_img.sh
